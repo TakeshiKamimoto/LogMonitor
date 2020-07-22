@@ -1,0 +1,121 @@
+<html>
+<head>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script type="text/javascript">
+    google.load("visualization", "1", {packages:["corechart"]});
+
+    //
+    $(function(){
+
+      //グーグルグラフのライブラリ読み込み完了イベント
+      google.setOnLoadCallback( init );
+
+      //初期化
+      function init(){
+
+        //グラフ描画＋指定秒繰り返す
+        makeGraph();
+        setInterval(function(){
+          makeGraph();
+        },60 * 1000 );
+
+      }
+
+      //グラフの描画
+      function makeGraph(){
+
+        //JSONデーターの取得
+        $.ajax({
+          type: 'GET',
+          url: './print.php',
+          dataType: 'json',
+          success: function(json){
+
+            //タイトル作成
+            var dataArray = [[
+              '日付',
+              '温度',
+              '湿度',
+              '不快指数',
+              'CPU温度'
+            ]];
+
+            //jsonデーターの中身取得
+            var len = json.length;
+            for(var i=0; i < len; i++){
+
+              //最新のデーターを取得
+              if( i == len-1 ){
+                $("#temperature").text(parseFloat(json[i].temperature) + "℃" );
+                $("#humidity").text(parseFloat(json[i].humidity) + "％" );
+                $("#discomfort").text(parseInt(json[i].discomfort , 10 ) );
+                $("#temperature_cpu").text(parseFloat(json[i].temperature_cpu) + "℃" );
+              }
+
+              //データーに追加
+              dataArray.push([
+                json[i].mdatetime,
+                parseFloat(json[i].temperature),
+                parseFloat(json[i].humidity),
+                parseFloat(json[i].discomfort),
+                parseFloat(json[i].temperature_cpu)
+              ]);
+
+            }
+
+            //グラフの描画
+            var data = google.visualization.arrayToDataTable( dataArray );
+            var options = {
+              title: '温度・湿度グラフ',
+              legend: { position: 'top' }
+            };
+            var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+
+          }
+
+        });
+
+      }
+
+    });
+  </script>
+  <style type="text/css">
+    #chart_div{
+      width: 900px;
+      height: 500px;
+    }
+    dl{
+      position: absolute;
+      top: 76px;
+      left: 760px;
+      border: 1px solid rgb(228, 228, 228);
+      padding: 10px 15px 0 14px;
+      border-radius: 10px;
+      box-shadow: 0 0 3px gray;
+      background: rgb(255, 254, 249);
+    }
+    dd{
+      padding: 0;
+      margin: 6px 0 10px 20px;
+      font-size: 46px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+<div id="chart_div"></div>
+<dl>
+  <dt>不快指数</dt>
+  <dd id="discomfort"></dd>
+  <dt>CPU温度</dt>
+  <dd id="temperature_cpu"></dd>
+  <dt>湿度</dt>
+  <dd id="humidity"></dd>
+  <dt>温度</dt>
+  <dd id="temperature"></dd>
+</dl>
+</body>
+</html>
