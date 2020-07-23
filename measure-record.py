@@ -5,6 +5,12 @@ import weathernewsdata
 import webpressdata
 import time
 import datetime
+import os
+import pandas as pd
+import csv
+import re
+import requests
+from bs4 import BeautifulSoup
  
 TIME = str(datetime.datetime.now())
 
@@ -46,7 +52,7 @@ if checkdb.fetchone() == None:
 # セットしたい場所に?を記述し，executeメソッドの第2引数に?に当てはめる値を
 # タプルで渡す．
 # 温度、湿度、タイムスタンプを保存。
-sql = 'insert into weather (timestamp, temp, press, humid, temp_m, press_m, humid_m) value (?,?,?,?,?,?,?)'
+sql = '''insert into ''' + dbtable + '''(timestamp, temp, press, humid, temp_m, press_m, humid_m) value (?,?,?,?,?,?,?)'''
 data= (TIME, bme_t, bme_p, bme_h, web_t, web_p, web_h)
 c.execute(sql, data)
 conn.commit()
