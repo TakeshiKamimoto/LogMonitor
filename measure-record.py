@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*- Developped from store-sqlite.py
 import sqlite3
-import bme280
+import bme280_sample
 import time
 import datetime
  
 
- 
-# 
+# センサー計測データ読み込み
+sensdata = bme280_sample.readData() 
+bme_t = sensdata[0]
+bme_p = sensdata[1]
+bme_h = sensdata[2]
  
 # SQLiteのデータベースの名前と保管場所を指定。
 dbname = '/home/pi/LogMonitor/measure.db'
@@ -33,7 +36,7 @@ if checkdb.fetchone() == None:
 # タプルで渡す．
 # 温度、湿度、タイムスタンプを保存。
 sql = 'insert into weather (timestamp, temp, press, humid, temp_m, press_m, humid_m) value (?,?,?,?,?,?,?)'
-data= (TIME, TEMP, PRESS, HUMID, TEMP_)
+data= (TIME, bme_t, bme_p, bme_h, )
 c.execute(sql, data)
 conn.commit()
  
