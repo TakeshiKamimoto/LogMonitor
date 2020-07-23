@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- Developped from store-sqlite.py
+# -*- coding: utf-8 -*- Developed from store-sqlite.py
 import sqlite3
 import bme280_sample
 import weathernewsdata
