@@ -13,6 +13,14 @@ sensdata = bme280_sample.readData()
 bme_t = sensdata[0]
 bme_p = sensdata[1]
 bme_h = sensdata[2]
+
+#気象ウェブページからスクレイピング
+webdata = weathernewsdata.readData() 
+web_t = webdata[0]
+web_h = webdata[1]
+
+#気象ウェブページからスクレイピング
+web_p = webpressdata.readData() 
  
 # SQLiteのデータベースの名前と保管場所を指定。
 dbname = '/home/pi/LogMonitor/measure.db'
@@ -39,7 +47,7 @@ if checkdb.fetchone() == None:
 # タプルで渡す．
 # 温度、湿度、タイムスタンプを保存。
 sql = 'insert into weather (timestamp, temp, press, humid, temp_m, press_m, humid_m) value (?,?,?,?,?,?,?)'
-data= (TIME, bme_t, bme_p, bme_h, )
+data= (TIME, bme_t, bme_p, bme_h, web_t, web_p, web_h)
 c.execute(sql, data)
 conn.commit()
  
