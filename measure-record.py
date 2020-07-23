@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*- Developped from store-sqlite.py
 import sqlite3
 import bme280_sample
+import weathernewsdata
+import webpressdata
 import time
 import datetime
  
