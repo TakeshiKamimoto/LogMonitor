@@ -6,5 +6,7 @@ http://mugimugi.hatenablog.com/entry/2014/07/20/Raspberry_Pi%E3%81%A8%E6%B8%A9%E
 
 ------------------------------------      
 store-sqlite.py
+
 Raspberry PiでSQLiteに温度データを蓄えてみよう！
+
 https://yuki-no-yabo.com/raspberry-pi-sqlite/
