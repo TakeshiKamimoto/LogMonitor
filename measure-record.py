@@ -4,6 +4,7 @@ import bme280_sample
 import time
 import datetime
  
+TIME = str(datetime.datetime.now())
 
 # センサー計測データ読み込み
 sensdata = bme280_sample.readData() 
