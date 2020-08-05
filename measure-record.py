@@ -6,13 +6,10 @@ import webpressdata
 import time
 import datetime
 import os
-import pandas as pd
-import csv
-import re
-import requests
-from bs4 import BeautifulSoup
  
-TIME = str(datetime.datetime.now())
+currenttime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+TIME = datetime.datetime.strptime(currenttime,'%Y/%m/%d %H:%M:%S')
+print(TIME)
 
 # センサー計測データ読み込み
 sensdata = bme280_sample.readData() 
@@ -25,13 +22,18 @@ webdata = weathernewsdata.readData()
 web_t = webdata[0]
 web_h = webdata[1]
 
-#気象ウェブページからスクレイピング
+# 気象ウェブページからスクレイピング
 web_p = webpressdata.readData() 
+
+# 不快指数の計算
+discomfort = 0.81 * float(bme_t) + 0.01 * float(bme_h) *(0.99* float(bme_t)-14.3)+46.3;
  
-# SQLiteのデータベースの名前と保管場所を指定。
+# SQLiteのデータベースの名前と保管場所を指定
 dbname = '/home/pi/LogMonitor/measure.db'
+
 # データベース内のテーブルの名前
 dbtable = 'weather'
+
 # SQLiteへの接続
 conn = sqlite3.connect(dbname)
 c = conn.cursor()
@@ -40,22 +42,18 @@ c = conn.cursor()
 checkdb = conn.execute("SELECT * FROM sqlite_master WHERE type='table' and name='%s'" % dbtable)
 # もしテーブルがなかったら新規でテーブルを作成する
 if checkdb.fetchone() == None:
-    # ID、タイムスタンプ、温度、湿度の4列のテーブルを作成するクエリを作成。IDは自動附番。
-    create_table = '''create table ''' + dbtable + '''(id integer primary key autoincrement, timestamp varchar(20),
-                  temp real, press real, humid real, temp_m real, press_m real, humid_m real)'''
-    # クエリを実行
+    # ID、タイムスタンプ、温度、湿度の4列のテーブルを作成するクエリ
+    create_table = '''create table ''' + dbtable + '''(id integer primary key autoincrement, timestamp datetime,
+                  temp real, press real, humid real, temp_m real, press_m real, humid_m real, discomfort real)'''
+    
     c.execute(create_table)
-    # 変更を保存する
+    
     conn.commit()
  
-# SQL文に値をセットする場合は，Pythonのformatメソッドなどは使わずに，
-# セットしたい場所に?を記述し，executeメソッドの第2引数に?に当てはめる値を
-# タプルで渡す．
 # 温度、湿度、タイムスタンプを保存。
-sql = '''insert into ''' + dbtable + '''(timestamp, temp, press, humid, temp_m, press_m, humid_m) value (?,?,?,?,?,?,?)'''
-data= (TIME, bme_t, bme_p, bme_h, web_t, web_p, web_h)
+sql = '''insert into ''' + dbtable + '''(timestamp, temp, press, humid, temp_m, press_m, humid_m, discomfort) values (?,?,?,?,?,?,?,?)'''
+data= (TIME, bme_t, bme_p, bme_h, web_t, web_p, web_h, discomfort)
 c.execute(sql, data)
 conn.commit()
  
-#接続を切る
 conn.close()

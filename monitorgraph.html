@@ -29,17 +29,18 @@
         //JSONデーターの取得
         $.ajax({
           type: 'GET',
-          url: './print.php',
+          url: './print2.php',
           dataType: 'json',
           success: function(json){
 
             //タイトル作成
             var dataArray = [[
-              '日付',
-              '温度',
-              '湿度',
-              '不快指数',
-              'CPU温度'
+              'Date',
+              'Temp.',
+              'Temp.(outside)',
+              'Humidity',
+              'Discomfort',
+              'Press.',
             ]];
 
             //jsonデーターの中身取得
@@ -48,28 +49,53 @@
 
               //最新のデーターを取得
               if( i == len-1 ){
-                $("#temperature").text(parseFloat(json[i].temperature) + "℃" );
-                $("#humidity").text(parseFloat(json[i].humidity) + "％" );
+                $("#temperature").text(parseFloat(json[i].temp) + "deg.C" );
+                $("#humidity").text(parseFloat(json[i].humid) + "%" );
                 $("#discomfort").text(parseInt(json[i].discomfort , 10 ) );
-                $("#temperature_cpu").text(parseFloat(json[i].temperature_cpu) + "℃" );
+                $("#pressure").text(parseFloat(json[i].press).toFixed(1) + "hPa" );
               }
 
               //データーに追加
               dataArray.push([
-                json[i].mdatetime,
-                parseFloat(json[i].temperature),
-                parseFloat(json[i].humidity),
+                new Date(json[i].timestamp.replace(/\-/g, "/")),
+                parseFloat(json[i].temp),
+                parseFloat(json[i].temp_m),
+                parseFloat(json[i].humid),
                 parseFloat(json[i].discomfort),
-                parseFloat(json[i].temperature_cpu)
+                parseFloat(json[i].press)/10
               ]);
-
             }
+
+            var update = new Date(json[i-1].timestamp.replace(/\-/g, "/"));
+            var format = 'MM-DD hh:mm';
+            format = format.replace(/MM/,('0' + (update.getMonth() + 1)).slice(-2));
+            format = format.replace(/DD/,('0' + update.getDate()).slice(-2));
+            format = format.replace(/hh/,('0' + update.getHours()).slice(-2));
+            format = format.replace(/mm/,('0' + update.getMinutes()).slice(-2));
+            $("#time").text(format);
+            
 
             //グラフの描画
             var data = google.visualization.arrayToDataTable( dataArray );
             var options = {
-              title: '温度・湿度グラフ',
-              legend: { position: 'top' }
+              title: 'Inner Room measurment',
+              legend: { position: 'top' },
+              hAxis: {
+                format: 'MM/dd HH:mm'
+                // title: 'Time'
+              },
+              vAxis: {
+                0: {minValue:23,maxValue:29,gridlined:{count:9}},
+                1: {viewWindowMode: 'explicit',minValue:70,maxValue:100,gridlined:{count:9}}
+              },
+              series: {
+                  0: {targetAxisIndex:0},
+                  1: {targetAxisIndex:0},
+                  2: {targetAxisIndex:1},
+                  3: {targetAxisIndex:1},
+                  4: {targetAxisIndex:1}
+              }
+              
             };
             var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
             chart.draw(data, options);
@@ -84,13 +110,16 @@
   </script>
   <style type="text/css">
     #chart_div{
-      width: 900px;
-      height: 500px;
+      position: absolute;
+      top: 0px;
+      left: 20px;
+      width: 1100px;
+      height: 600px;
     }
     dl{
       position: absolute;
-      top: 76px;
-      left: 760px;
+      top: 100px;
+      left: 5px;
       border: 1px solid rgb(228, 228, 228);
       padding: 10px 15px 0 14px;
       border-radius: 10px;
@@ -99,8 +128,8 @@
     }
     dd{
       padding: 0;
-      margin: 6px 0 10px 20px;
-      font-size: 46px;
+      margin: 2px 1px 5px 5px;
+      font-size: 24px;
       text-align: right;
     }
   </style>
@@ -108,14 +137,16 @@
 <body>
 <div id="chart_div"></div>
 <dl>
-  <dt>不快指数</dt>
+  <dt>Discomfort</dt>
   <dd id="discomfort"></dd>
-  <dt>CPU温度</dt>
-  <dd id="temperature_cpu"></dd>
-  <dt>湿度</dt>
+  <dt>Pressure</dt>
+  <dd id="pressure"></dd>
+  <dt>Humidity</dt>
   <dd id="humidity"></dd>
-  <dt>温度</dt>
+  <dt>Temperature</dt>
   <dd id="temperature"></dd>
+  <dt>Updated at</dt>
+  <dd id="time"></dd>
 </dl>
 </body>
 </html>

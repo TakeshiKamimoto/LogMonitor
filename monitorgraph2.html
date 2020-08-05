@@ -1,0 +1,209 @@
+<html>
+<head>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> 
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script type="text/javascript">
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.charts.load('current', {'packages':['gauge']});
+    //google.charts.setOnLoadCallback(drawChart);
+
+    //
+    $(function(){
+
+      //グーグルグラフのライブラリ読み込み完了イベント
+      google.setOnLoadCallback( init );
+
+      //初期化
+      function init(){
+
+        //グラフ描画＋指定秒繰り返す
+        makeGraph();
+        setInterval(function(){
+          makeGraph();
+        },60 * 1000 );
+
+      }
+
+      //グラフの描画
+      function makeGraph(){
+
+        //JSONデーターの取得
+        $.ajax({
+          type: 'GET',
+          url: './print2.php',
+          dataType: 'json',
+          success: function(json){
+
+            //タイトル作成
+            var dataArray = [[
+              'Date',
+              'Temp.',
+              'Temp.(outside)',
+              'Humidity',
+              'Discomfort',
+              'Press.',
+            ]];
+
+            //jsonデーターの中身取得
+            var len = json.length;
+
+            for(var i=0; i < len; i++){
+
+              //最新のデーターを取得
+              if( i == len-1 ){
+                var temperature_now = parseFloat(json[i].temp);
+                var humidity_now = parseFloat(json[i].humid);
+                var discomfort_now = parseFloat(json[i].discomfort);
+              }
+
+              //データーに追加
+              dataArray.push([
+                new Date(json[i].timestamp.replace(/\-/g, "/")),
+                parseFloat(json[i].temp),
+                parseFloat(json[i].temp_m),
+                parseFloat(json[i].humid),
+                parseFloat(json[i].discomfort),
+                parseFloat(json[i].press)/10
+              ]);
+            }
+
+            var update = new Date(json[i-1].timestamp.replace(/\-/g, "/"));
+            var format = 'MM-DD hh:mm';
+            format = format.replace(/MM/,('0' + (update.getMonth() + 1)).slice(-2));
+            format = format.replace(/DD/,('0' + update.getDate()).slice(-2));
+            format = format.replace(/hh/,('0' + update.getHours()).slice(-2));
+            format = format.replace(/mm/,('0' + update.getMinutes()).slice(-2));
+            $("#time").text(format);
+            
+
+            //チャートの描画
+            var data = google.visualization.arrayToDataTable( dataArray );
+            var options = {
+              title: 'Inner Room measurment',
+              legend: { position: 'top' },
+              hAxis: {
+                format: 'MM/dd HH:mm'
+                // title: 'Time'
+              },
+              vAxis: {
+                0: {minValue:23,maxValue:29,gridlined:{count:9}},
+                1: {viewWindowMode: 'explicit',minValue:70,maxValue:100,gridlined:{count:9}}
+              },
+              series: {
+                  0: {targetAxisIndex:0},
+                  1: {targetAxisIndex:0},
+                  2: {targetAxisIndex:1},
+                  3: {targetAxisIndex:1},
+                  4: {targetAxisIndex:1}
+              }
+            }
+            //Draw Gauge
+            var gaugedata1 = google.visualization.arrayToDataTable([
+                 ['Label', 'Value'],
+                 ['Temp.',temperature_now],
+                 //['Humid.',humidity_now],
+                 //['Discomfort',discomfort_now]
+            ]);
+            var gaugeoption1 = {
+                width: 180, height: 180,
+                min: 20, max: 40,
+                redFrom: 35, redTo: 40,
+                yellowFrom: 30, yellowTo: 35,
+                minorTicks: 5
+            };
+            var formatter = new google.visualization.NumberFormat({
+              suffix: ' C',
+              fractionDigits: 1
+            });
+            
+            var gaugedata2 = google.visualization.arrayToDataTable([
+                 ['Label', 'Value'],
+                 ['Humid.',humidity_now],
+                 //['Discomfort',discomfort_now]
+            ]);
+            var gaugeoption2 = {
+                width: 180, height: 180,
+                min: 20, max: 100,
+                redFrom: 95, redTo: 100,
+                yellowFrom: 80, yellowTo: 95,
+                minorTicks: 5
+            };
+            var formatter2 = new google.visualization.NumberFormat({
+              suffix: '%',
+              fractionDigits: 1
+            });
+            
+            var gaugedata3 = google.visualization.arrayToDataTable([
+                 ['Label', 'Value'],
+                 ['Discomfort',discomfort_now]
+            ]);
+            var gaugeoption3 = {
+                width: 180, height: 180,
+                min: 50, max: 100,
+                redFrom: 85, redTo: 100,
+                yellowFrom: 75, yellowTo: 85,
+                minorTicks: 5
+            };
+            var formatter3 = new google.visualization.NumberFormat({
+              suffix: '%',
+              fractionDigits: 1
+            });
+            
+            var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+            
+            var gauge1 = new google.visualization.Gauge(document.getElementById('gauge1_div'));
+            formatter.format(gaugedata1, 1);
+            gauge1.draw(gaugedata1, gaugeoption1);
+            
+            var gauge2 = new google.visualization.Gauge(document.getElementById('gauge2_div'));
+            formatter2.format(gaugedata2, 1);
+            gauge2.draw(gaugedata2, gaugeoption2);
+            
+            var gauge3 = new google.visualization.Gauge(document.getElementById('gauge3_div'));
+            formatter3.format(gaugedata3, 1);
+            gauge3.draw(gaugedata3, gaugeoption3);
+
+          }
+
+        });
+
+      }
+
+    });
+  </script>
+  <style type="text/css">
+    #chart_div{
+      position: absolute;
+      top: 0px;
+      left: 20px;
+      width: 1100px;
+      height: 600px;
+    }
+    #gauge1_div{
+      position: absolute;
+      top: 10px;
+      left: 0px;
+    }
+    #gauge2_div{
+      position: absolute;
+      top: 200px;
+      left: 0px;
+    }
+    #gauge3_div{
+      position: absolute;
+      top: 390px;
+      left: 0px;
+    }
+
+  </style>
+</head>
+<body>
+<div id="chart_div"></div>
+<div id="gauge1_div"></div>
+<div id="gauge2_div"></div>
+<div id="gauge3_div"></div>
+</body>
+</html>
