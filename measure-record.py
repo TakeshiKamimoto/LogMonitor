@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*- Developed from store-sqlite.py
 import sqlite3
 import bme280_sample
-import weathernewsdata
-import webpressdata
+#import weathernewsdata
+#import webpressdata
+import openweatherdata
 import time
 import datetime
 import os
@@ -17,13 +18,14 @@ bme_t = sensdata[0]
 bme_p = sensdata[1]
 bme_h = sensdata[2]
 
-#気象ウェブページからスクレイピング
-webdata = weathernewsdata.readData() 
+#気象情報APIよりデータ取得
+webdata = openweatherdata.readData() 
 web_t = webdata[0]
 web_h = webdata[1]
+web_p = webdata[2]
 
 # 気象ウェブページからスクレイピング
-web_p = webpressdata.readData() 
+#web_p = webpressdata.readData() 
 
 # 不快指数の計算
 discomfort = 0.81 * float(bme_t) + 0.01 * float(bme_h) *(0.99* float(bme_t)-14.3)+46.3;
