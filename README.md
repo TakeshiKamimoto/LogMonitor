@@ -47,3 +47,8 @@ https://yuki-no-yabo.com/raspberry-pi-sqlite/
 Visualization: Gauge
 
 https://developers.google.com/chart/interactive/docs/gallery/gauge
+
+------------------------------------
+OpenWeatherMapで大阪の天気を取得した際の備忘録（python）
+
+https://qiita.com/seigot/items/0445f0ff96d07762dbf9
