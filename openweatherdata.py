@@ -5,7 +5,7 @@ import requests
 
 def readData():
   city = "Tokyo"
-  key = 'xxxxxxxxxxxxx'  # your API Key
+  key = '793a85e2346507655c6f21d02566d03f'  # your API Key
   url = 'http://api.openweathermap.org/data/2.5/weather?units=metric&q=' + city + '&APPID=' + key
 
   #print(url)
