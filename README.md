@@ -2,7 +2,7 @@
 
 ## measure-record.py
 bme280センサから読み込んだ室温、湿度、気圧データをSQLiteデータベースに追加するPythonコード。cronで10分毎に実行。
-外気温、湿度、大気圧データは気象ウェブサイトのデータをスクレイピングして、同じSQLiteデータベースに追加する。
+外気温、湿度、大気圧データは~~気象ウェブサイトのデータをスクレイピングして、~~<u>OpenWeatherMapのAPIで取得して</u>同じSQLiteデータベースに追加する。
 
 ## print2.php
 SQLiteデータベースにアクセスしてグラフに表示したいデータをクエリで取り出してjsonデータとし書き出すphpコード。グラフを描くhtmlから呼び出す。
@@ -47,3 +47,8 @@ https://yuki-no-yabo.com/raspberry-pi-sqlite/
 Visualization: Gauge
 
 https://developers.google.com/chart/interactive/docs/gallery/gauge
+
+------------------------------------
+OpenWeatherMapで大阪の天気を取得した際の備忘録（python）
+
+https://qiita.com/seigot/items/0445f0ff96d07762dbf9
