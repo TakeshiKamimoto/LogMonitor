@@ -62,5 +62,8 @@ AE-BME280がTWELITE経由で送るデータをpythonで加工する
 
 https://hakengineer.xyz/2017/12/27/post-835/
 
+------------------------------------
+Raspberry Pi GPIOヘッダーでシリアル通信ができるようにする方法
 
+https://www.ingenious.jp/raspberry-pi/2019/03/gpio-uart/
 
