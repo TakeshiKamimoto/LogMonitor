@@ -23,6 +23,10 @@ pythonのdatetimeで作った時刻には小数点の付いた秒、すなわち
 こうすると、currenttimeには　2020/07/29 00:00:00(文字列)が入り、timestampには　2020-07-29 00:00:00(datetime値)が入った。その結果、Safariでも年月時刻データとして認識できるようになった。但し、htmlで使うときに　- を　/ に置き換える　timestamp.replace(/-/g,"/")　の処置はやはり必要だ。
 <br><br>
 
+(2020／09／02 追加)
+Twelite通信モジュールを使ってbme280センサーを無線化した。受信側モジュールはラズパイのUART通信入力につないで、シリアルデータでbme280のデータを受け取る。プログラムは　receive_bme280.py 
+
+
 ![image](2020-08-03.png)
 
 
@@ -52,3 +56,11 @@ https://developers.google.com/chart/interactive/docs/gallery/gauge
 OpenWeatherMapで大阪の天気を取得した際の備忘録（python）
 
 https://qiita.com/seigot/items/0445f0ff96d07762dbf9
+
+------------------------------------
+AE-BME280がTWELITE経由で送るデータをpythonで加工する
+
+https://hakengineer.xyz/2017/12/27/post-835/
+
+
+
