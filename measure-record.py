@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*- Developed from store-sqlite.py
 import sqlite3
-import bme280_sample
+#import bme280_sample
 #import weathernewsdata
 #import webpressdata
+import receive_bme280
 import openweatherdata
 import time
 import datetime
@@ -13,7 +14,7 @@ TIME = datetime.datetime.strptime(currenttime,'%Y/%m/%d %H:%M:%S')
 print(TIME)
 
 # センサー計測データ読み込み
-sensdata = bme280_sample.readData() 
+sensdata = receive_bme280.readData() 
 bme_t = sensdata[0]
 bme_p = sensdata[1]
 bme_h = sensdata[2]
